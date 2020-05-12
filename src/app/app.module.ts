@@ -15,6 +15,11 @@ import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { AngularFireModule } from "@angular/fire";
+import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { environment } from "src/environments/environment";
+import { AngularFireAuthModule } from "@angular/fire/auth";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,7 +47,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
       {path: 'my/orders', component: MyOrdersComponent},
       {path: 'admin/products', component: AdminProductsComponent},
       {path: 'admin/orders', component: AdminOrdersComponent}
-    ])
+    ]),
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule,
+    AngularFireAuthModule
   ],
   providers: [],
   bootstrap: [AppComponent]
