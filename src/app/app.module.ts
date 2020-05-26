@@ -19,6 +19,7 @@ import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { environment } from "src/environments/environment";
 import { AngularFireAuthModule } from "@angular/fire/auth";
+import { NewUserComponent } from './new-user/new-user/new-user.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { AngularFireAuthModule } from "@angular/fire/auth";
     MyOrdersComponent,
     AdminProductsComponent,
     AdminOrdersComponent,
-    LoginComponent
+    LoginComponent,
+    NewUserComponent
   ],
   imports: [
     BrowserModule,
@@ -43,6 +45,7 @@ import { AngularFireAuthModule } from "@angular/fire/auth";
       {path: 'shopping-cart', component: ShoppingCartComponent},
       {path: 'check-out', component: CheckOutComponent},
       {path: 'order-success', component: OrderSuccessComponent},
+      {path: 'register', component: NewUserComponent},
       {path: 'login', component: LoginComponent},
       {path: 'my/orders', component: MyOrdersComponent},
       {path: 'admin/products', component: AdminProductsComponent},
