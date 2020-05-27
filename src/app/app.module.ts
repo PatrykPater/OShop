@@ -20,6 +20,8 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { environment } from "src/environments/environment";
 import { AngularFireAuthModule } from "@angular/fire/auth";
 import { NewUserComponent } from './new-user/new-user/new-user.component';
+import { AuthService } from './services/auth.service';
+import { AuthGuardService } from './services/auth-guard.service';
 
 @NgModule({
   declarations: [
@@ -43,19 +45,23 @@ import { NewUserComponent } from './new-user/new-user/new-user.component';
       {path: '', component: HomeComponent},
       {path: 'products', component: ProductsComponent},
       {path: 'shopping-cart', component: ShoppingCartComponent},
-      {path: 'check-out', component: CheckOutComponent},
-      {path: 'order-success', component: OrderSuccessComponent},
       {path: 'register', component: NewUserComponent},
       {path: 'login', component: LoginComponent},
-      {path: 'my/orders', component: MyOrdersComponent},
-      {path: 'admin/products', component: AdminProductsComponent},
-      {path: 'admin/orders', component: AdminOrdersComponent}
+
+      {path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuardService] },
+      {path: 'order-success', component: OrderSuccessComponent, canActivate: [AuthGuardService]},
+      {path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuardService]},
+      
+      {path: 'admin/products', component: AdminProductsComponent, canActivate: [AuthGuardService]},
+      {path: 'admin/orders', component: AdminOrdersComponent, canActivate: [AuthGuardService]}
     ]),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireAuthModule
   ],
-  providers: [],
+  providers: [
+    AuthService,
+    AuthGuardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
