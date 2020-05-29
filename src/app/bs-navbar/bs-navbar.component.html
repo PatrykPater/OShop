@@ -22,7 +22,7 @@
           </a>
           <div ngbDropdownMenu  class="dropdown-menu" aria-labelledby="dropdown01">
             <a ngbDropdownItem class="dropdown-item" routerLink="/my/orders">My orders</a>
-            <ng-container *ngif="appUser.isAdmin" >
+            <ng-container *ngIf="appUser.isAdmin" >
               <a ngbDropdownItem class="dropdown-item" routerLink="/admin/orders">Manage Orders</a>
               <a ngbDropdownItem class="dropdown-item" routerLink="/admin/products">Manage Products</a>
             </ng-container>
