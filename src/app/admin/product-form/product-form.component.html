@@ -21,7 +21,7 @@
                 <label for="category">Category</label>
                 <select #category="ngModel" ngModel name="category" id="category" class="form-control" required>
                     <option value=""></option>
-                    <option *ngFor="let c of categories" [value]="c.id">
+                    <option *ngFor="let c of categories" [value]="c.key">
                         {{c.name}}
                     </option>
                 </select>
