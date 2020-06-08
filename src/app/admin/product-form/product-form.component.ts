@@ -11,7 +11,7 @@ import { map, filter, switchMap } from 'rxjs/operators';
   styleUrls: ['./product-form.component.css']
 })
 export class ProductFormComponent implements OnInit {
-
+productId: string;
 product: Product = this.createProductObject();
 categories: any[];
 
@@ -37,20 +37,32 @@ categories: any[];
    };
 
    initProductEdit(){
-    let productId = this.route.snapshot.paramMap.get('id');
-    if (productId) {
-      this.productService.get(productId)
-                         .valueChanges()
-                         .subscribe(change => this.product = change);
+    this.productId = this.route.snapshot.paramMap.get('id');
+    if (this.productId) {
+        this.productService.get(this.productId)
+                           .valueChanges()
+                           .subscribe(change => this.product = change);
     };
    };
 
    save(product: any){
-    this.productService.create(product);
-    this.router.navigate(['/admin/products']);
+    if (this.productId) { this.productService.update(this.productId, product) }
+    else { this.productService.create(product);
+           this.navigateToProductList(); }
    }
 
    createProductObject() : Product{
      return {title: "", category : "", imageUrl: "", price: 0}
+   }
+
+   delete(){
+     if (!confirm('Are you sure you want t delete this product')) return;
+
+     this.productService.delete(this.productId);
+     this.navigateToProductList();
+   }
+
+   navigateToProductList(){
+    this.router.navigate(['/admin/products']);
    }
 }
