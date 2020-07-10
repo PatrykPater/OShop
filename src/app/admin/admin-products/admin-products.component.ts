@@ -3,6 +3,7 @@ import { ProductService } from 'src/app/services/product.service';
 import { Subscription } from 'rxjs';
 import { Product } from 'src/app/models/product';
 import { map, filter, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-admin-products',
@@ -14,26 +15,39 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
   filteredProducts: Product[];
   productSubscription: Subscription;
 
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<Product> = new Subject();
+
   constructor(private productService: ProductService) { }
 
   ngOnDestroy(): void {
     this.productSubscription.unsubscribe();
+    this.dtTrigger.unsubscribe();
   }
 
   ngOnInit(): void {
     this.initProducts();
+    this.initDataTables();
   }
 
-  initProducts(){
+  initProducts(): void{
     this.productSubscription = this.productService.getAll()
-                                                  .subscribe(product => this.products = 
-                                                                        this.filteredProducts = 
-                                                                        product);
+                                                  .subscribe(product => {
+                                                    this.products = this.filteredProducts = product;
+                                                    this.dtTrigger.next();
+                                                  });
   }
 
-  filter(query: string){
+  filter(query: string): void{
     this.filteredProducts = (query) ?
     this.products.filter(p => p.title.toLowerCase().includes(query.toLowerCase())) :
     this.products;
+  }
+
+  initDataTables(): void{
+    this.dtOptions = {
+      pagingType : 'full_numbers',
+      pageLength: 5
+    }
   }
 }
