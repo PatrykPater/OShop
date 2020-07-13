@@ -50,4 +50,8 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
       pageLength: 5
     }
   }
+
+  editProduct(productId: string): void{
+
+  }
 }

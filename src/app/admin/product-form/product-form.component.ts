@@ -39,7 +39,7 @@ productSubscription: Subscription;
 
    initCategoryDropdown(){
     this.categorySubscription = this.categoryService
-                                    .getCategories()
+                                    .getAll()
                                     .subscribe(category => this.categories = category);
    };
 
