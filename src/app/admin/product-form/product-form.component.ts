@@ -3,7 +3,6 @@ import { CategoryService } from 'src/app/services/category.service';
 import { ProductService } from 'src/app/services/product.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/models/product';
-import { map, filter, switchMap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Category } from 'src/app/models/category';
 

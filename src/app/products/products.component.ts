@@ -1,9 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ProductService } from '../services/product.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Product } from '../models/product';
-import { CategoryService } from '../services/category.service';
-import { Category } from '../models/category';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -17,45 +15,30 @@ export class ProductsComponent implements OnInit, OnDestroy {
   filteredProducts: Product[]= [];
   productSubscription: Subscription;
 
-  categories: Category[] = [];
-  categoriesSubscription: Subscription;
-
   selectedCategory: string;
   selectedCategorySubscription: Subscription;
 
-  constructor(
-    private route: ActivatedRoute,
-    private productService : ProductService,
-    private categoryService: CategoryService) {}
+  constructor(private route: ActivatedRoute,
+              private productService : ProductService) {}
 
   ngOnDestroy(): void {
     this.productSubscription.unsubscribe();
-    this.categoriesSubscription.unsubscribe();
     this.selectedCategorySubscription.unsubscribe();
   }
 
   ngOnInit(): void {
     this.initProducts();
-    this.initCategories();
-    this.initFilters();
   }
 
-  initProducts(){
+  initProducts(): void {
     this.productSubscription = this.productService.getAll()
-                                                  .subscribe(products => this.products = products)
+                                                  .subscribe(products => {
+                                                    this.products = products;
+                                                    this.initFilteringByCategory();
+                                                  })
   }
 
-  initCategories(){
-    this.categoriesSubscription = this.categoryService.getAll()
-                                                      .subscribe(categories => 
-                                                                this.categories = categories)
-  }
-
-  initFilters(){
-    this.initFilteringByCategory();
-  }
-
-  initFilteringByCategory(){
+  initFilteringByCategory() : void {
     this.selectedCategorySubscription = this.route.queryParamMap.subscribe(params =>{
       this.selectedCategory = params.get('category');
 
