@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { Product } from '../models/product';
 import { map } from 'rxjs/operators';
 import { ShoppingCart } from '../models/shopping-cart';
 import { CartItem } from '../models/cart-item';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Key } from 'protractor';
+import { FlashMessageService } from './flash-message.service';
+import { FlashMessageType } from '../enums/flash-message-types';
 
 @Injectable({
   providedIn: 'root'
@@ -12,52 +15,70 @@ import { Subscription } from 'rxjs';
 export class ShoppingCartService {
   shoppingCart: ShoppingCart;
 
-  constructor(private db: AngularFireDatabase) {
-    this.getOrCreateCart().then(promise => promise.valueChanges()
-                          .pipe(map(dbObject => dbObject = this.shoppingCart)));
+  constructor(private db: AngularFireDatabase,
+              private flashMessageService: FlashMessageService) { this.initCart(); }
+
+   addToCart (product: Product): void{
+    let cartItem = this.shoppingCart.items.find(cartItem => cartItem.productId === product.key);
+    if(!cartItem){
+      this.addNewCartItem(product);
+      this.flashMessageService.showMessage("Product added to Cart", FlashMessageType.success);
+      return;
+    } 
+    debugger; 
+    this.updateCartItemQty(cartItem);
+    this.flashMessageService.showMessage("Product quantity changed", FlashMessageType.success);
+  }
+
+  private initCart(): void{
+    this.getOrCreateCart();
    }
 
-  async addToCart (product: Product){
-    let cartItem = this.shoppingCart.items.find(cartItem => cartItem.productId === product.key);
-    if(!cartItem) this.addNewCartItem(product); 
-    this.updateCartItem(cartItem);
-  }
-
-  private async getOrCreateCart(): Promise<AngularFireObject<ShoppingCart>>{
-    debugger;
-    let cartId = localStorage.getItem('cartId');
-    if(!cartId) cartId = await this.getCartId();
-    let testcart = this.getCart(cartId);
-    return testcart;
-  }
-
-  private getCart(cartID: string): AngularFireObject<ShoppingCart>{
-    return this.db.object('/shopping-carts/' + cartID)
-  }
-
-  private async getCartId(): Promise<string>{
-    let result = await this.create();
-    localStorage.setItem('cartId', result.key);
-    return result.key;
-  }
-
-  private create(): firebase.database.Reference{
-    let shoppingCart: ShoppingCart;
-    shoppingCart.dateCreated = new Date().getTime();
-    return this.db.list('/shopping-carts').push(shoppingCart);
-  }
-
-  updateCartItem(cartItem: CartItem): void{
-    cartItem.quantity = cartItem.quantity + 1;
-  }
-
-  addNewCartItem(product: Product): void{
-    let cartItem: CartItem;
-    cartItem.productId = product.key;
-    cartItem.quantity = 1;
+  private addNewCartItem(product: Product): void{
+    let cartItem: CartItem = {
+      productId: product.key,
+      quantity: 1,
+      cartId: this.shoppingCart.key 
+    };
 
     this.shoppingCart.items.push(cartItem);
     this.db.object('/shopping-carts/' + this.shoppingCart.key).update(this.shoppingCart);
   }
 
+  private updateCartItemQty(cartItem: CartItem): void{
+    cartItem.quantity = cartItem.quantity + 1;
+    this.db.object('/shopping-carts/' + this.shoppingCart.key).update(this.shoppingCart);
+  }
+
+  private async getOrCreateCart(){
+    let cartId = localStorage.getItem('cartId');
+    if(!cartId) cartId = await this.CreateNewShoppingCart();
+    this.getCart(cartId);
+  }
+
+  private async CreateNewShoppingCart(): Promise<string>{
+    let result = this.createNewUserShoppingCart();
+    localStorage.setItem('cartId', result.key);
+    return result.key;
+  }
+
+  private createNewUserShoppingCart(): firebase.database.Reference{
+    let shoppingCart: ShoppingCart = {  
+      dateCreated: new Date().getTime(),
+      items: [] 
+    };
+    return this.db.list('/shopping-carts').push(shoppingCart);
+  }
+
+  private getCart(cartID : string) : void {
+    this.db.object('/shopping-carts/' + cartID)
+            .snapshotChanges()
+            .pipe(
+              map(cartDb => cartDb))
+            .subscribe(cart => {
+              this.shoppingCart = cart.payload.val() as ShoppingCart
+              this.shoppingCart.key = cart.payload.key;
+              if(!this.shoppingCart.items) this.shoppingCart.items = [];
+            });
+  }
 }

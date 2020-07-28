@@ -33,6 +33,8 @@ import { ProductService } from './services/product.service';
 import { ProductFilterComponent } from './products/product-filter/product-filter.component';
 import { ProductCardComponent } from './product-card/product-card.component';
 import { ShoppingCartService } from './services/shopping-cart.service';
+import { FlashMessageComponent } from './flash-message/flash-message.component';
+import { FlashMessageService } from './services/flash-message.service';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,8 @@ import { ShoppingCartService } from './services/shopping-cart.service';
     NewUserComponent,
     ProductFormComponent,
     ProductFilterComponent,
-    ProductCardComponent
+    ProductCardComponent,
+    FlashMessageComponent
   ],
   imports: [
     BrowserModule,
@@ -99,7 +102,8 @@ import { ShoppingCartService } from './services/shopping-cart.service';
     AdminAuthGuardService,
     CategoryService,
     ProductService,
-    ShoppingCartService],
+    ShoppingCartService,
+    FlashMessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
