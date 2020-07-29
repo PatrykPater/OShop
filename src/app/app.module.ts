@@ -35,6 +35,7 @@ import { ProductCardComponent } from './product-card/product-card.component';
 import { ShoppingCartService } from './services/shopping-cart.service';
 import { FlashMessageComponent } from './flash-message/flash-message.component';
 import { FlashMessageService } from './services/flash-message.service';
+import { FlashMessageTypeDirective } from './directives/flash-message-type-style.drective';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { FlashMessageService } from './services/flash-message.service';
     ProductFormComponent,
     ProductFilterComponent,
     ProductCardComponent,
-    FlashMessageComponent
+    FlashMessageComponent,
+    FlashMessageTypeDirective
   ],
   imports: [
     BrowserModule,

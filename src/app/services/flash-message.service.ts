@@ -1,25 +1,19 @@
 import { Injectable } from '@angular/core';
 import { FlashMessage } from '../models/flash-message';
 import { FlashMessageType } from '../enums/flash-message-types';
-import { Observable, Subscription } from 'rxjs'
+import { Observable, Subscription, Subject } from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class FlashMessageService {
-  flashmessage: FlashMessage;
-  flashmessageSubscription: Subscription;
+  flashMessageEmiter = new Subject<FlashMessage>();
+  
   constructor() { }
 
-  showMessage(text: string, messageType: FlashMessageType) : void{
-    this.flashmessage = { text: text, type: messageType };
+  createFlashMessage(msgText: string, msgType: FlashMessageType) : FlashMessage{
+    return { text: msgText, type: msgType} as FlashMessage;
   }
-
-  getMessage(): Observable<FlashMessage>{
-    debugger;
-    return this.flashmessageSubscription = Observable.create(observer =>{
-      observer.next(this.flashmessage);
-    });
-  }
+  
 }

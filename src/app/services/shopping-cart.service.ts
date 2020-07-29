@@ -4,8 +4,6 @@ import { Product } from '../models/product';
 import { map } from 'rxjs/operators';
 import { ShoppingCart } from '../models/shopping-cart';
 import { CartItem } from '../models/cart-item';
-import { Observable } from 'rxjs';
-import { Key } from 'protractor';
 import { FlashMessageService } from './flash-message.service';
 import { FlashMessageType } from '../enums/flash-message-types';
 
@@ -22,19 +20,28 @@ export class ShoppingCartService {
     let cartItem = this.shoppingCart.items.find(cartItem => cartItem.productId === product.key);
     if(!cartItem){
       this.addNewCartItem(product);
-      this.flashMessageService.showMessage("Product added to Cart", FlashMessageType.success);
       return;
     } 
-    debugger; 
-    this.updateCartItemQty(cartItem);
-    this.flashMessageService.showMessage("Product quantity changed", FlashMessageType.success);
+    this.updateCartItem(cartItem);
   }
 
   private initCart(): void{
     this.getOrCreateCart();
    }
 
-  private addNewCartItem(product: Product): void{
+   private updateCartItem(cartItem : CartItem): void{
+    this.updateCartItemQty(cartItem);
+    let flashMessage = this.flashMessageService.createFlashMessage("Success! Cart item quantity changed.", FlashMessageType.success);
+    this.flashMessageService.flashMessageEmiter.next(flashMessage);
+   }
+
+   private addNewCartItem(product: Product) : void{
+    this.insertNewCartItem(product);
+    let flashMessage = this.flashMessageService.createFlashMessage("Success! Product added to cart.", FlashMessageType.success);
+    this.flashMessageService.flashMessageEmiter.next(flashMessage);
+   }
+
+  private insertNewCartItem(product: Product): void{
     let cartItem: CartItem = {
       productId: product.key,
       quantity: 1,
