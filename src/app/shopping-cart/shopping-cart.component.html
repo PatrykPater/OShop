@@ -1,1 +1,48 @@
-<p>shopping-cart works!</p>
+<div class="shopping-cart-container">
+    <table>
+        <thead class="cart-header">
+            <tr>
+                <td>
+                    Options
+                </td>
+                <td>
+                    Picture
+                </td>
+                <td>
+                    Name
+                </td>
+                <td>
+                    Price
+                </td>
+                <td>
+                    Quantity
+                </td>
+                <td>
+                    Total
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let cartItem of checkoutCartItems; let i = index" class="cart-item-row">
+                <td>
+                    Options cart item {{ i }}
+                </td>
+                <td>
+                    <img src="{{cartItem.imgUrl}}">
+                </td>
+                <td>
+                    {{ cartItem.name }}
+                </td>
+                <td>
+                    {{ cartItem.price | currency: 'USD' }}
+                </td>
+                <td>
+                    {{ cartItem.quantity }}
+                </td>
+                <td>
+                    {{ cartItem.total | currency: 'USD' }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

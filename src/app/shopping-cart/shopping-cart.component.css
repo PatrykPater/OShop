@@ -1,0 +1,37 @@
+.shopping-cart-container{
+    display: flex;
+    justify-content: center;
+    
+    text-align: center;
+}
+.cart-header{
+ background-color:rgba(0,0,0,.1);
+ border: solid 1px;
+ border-right: solid 1px;
+
+ 
+}
+
+.cart-item-row{
+    background-color: #fff;
+    height: 50px;
+    border: solid 1px;
+    border-right: solid 1px;
+    width: 100%;
+}
+
+.shopping-cart-container
+table tr td {
+    border: solid 1px;
+    height: 150px;
+    width: 150px;
+}
+
+.cart-summary-container{
+    display: flex;
+}
+
+img{
+    width: 100%;
+    height: auto;
+}

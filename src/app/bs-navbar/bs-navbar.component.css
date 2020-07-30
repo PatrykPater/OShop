@@ -1,3 +1,22 @@
 .dropdown-toggle{
     cursor: pointer;
 }
+
+.nav-item{
+    position: relative;
+}
+.cart-counter{
+    position: absolute;
+    right: 0px;
+    bottom: -5px;
+    color: white;
+    background-color: #007bff;
+    border-radius: 1px;
+
+    border-radius: 10px;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 15px;
+}

@@ -6,12 +6,15 @@ import { ShoppingCart } from '../models/shopping-cart';
 import { CartItem } from '../models/cart-item';
 import { FlashMessageService } from './flash-message.service';
 import { FlashMessageType } from '../enums/flash-message-types';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingCartService {
   shoppingCart: ShoppingCart;
+  cartItemsCounter: number = 0;
+  cartItemsCounterEmiter = new Subject<number>();
 
   constructor(private db: AngularFireDatabase,
               private flashMessageService: FlashMessageService) { this.initCart(); }
@@ -25,6 +28,15 @@ export class ShoppingCartService {
     this.updateCartItem(cartItem);
   }
 
+  private setCartItemsCounter(){
+    this.cartItemsCounter = 0;
+    this.shoppingCart.items.forEach(cartItem => {
+      this.cartItemsCounter += cartItem.quantity
+    });
+
+    this.cartItemsCounterEmiter.next(this.cartItemsCounter);
+  }
+
   private initCart(): void{
     this.getOrCreateCart();
    }
@@ -32,6 +44,7 @@ export class ShoppingCartService {
    private updateCartItem(cartItem : CartItem): void{
     this.updateCartItemQty(cartItem);
     let flashMessage = this.flashMessageService.createFlashMessage("Success! Cart item quantity changed.", FlashMessageType.success);
+    this.setCartItemsCounter();
     this.flashMessageService.flashMessageEmiter.next(flashMessage);
    }
 
@@ -80,12 +93,11 @@ export class ShoppingCartService {
   private getCart(cartID : string) : void {
     this.db.object('/shopping-carts/' + cartID)
             .snapshotChanges()
-            .pipe(
-              map(cartDb => cartDb))
             .subscribe(cart => {
               this.shoppingCart = cart.payload.val() as ShoppingCart
               this.shoppingCart.key = cart.payload.key;
               if(!this.shoppingCart.items) this.shoppingCart.items = [];
+              this.setCartItemsCounter();
             });
   }
 }
