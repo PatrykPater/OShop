@@ -1,9 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ShoppingCartService } from '../services/shopping-cart.service';
-import { ShoppingCart } from '../models/shopping-cart';
 import { CartItem } from '../models/cart-item';
-import { CheckoutCartItem } from '../models/checkout-cart-item';
-import { ProductService } from '../services/product.service';
 import { Product } from '../models/product';
 import { Subscription } from 'rxjs';
 
@@ -12,55 +9,31 @@ import { Subscription } from 'rxjs';
   templateUrl: './shopping-cart.component.html',
   styleUrls: ['./shopping-cart.component.css']
 })
-export class ShoppingCartComponent implements OnInit {
+export class ShoppingCartComponent implements OnInit, OnDestroy {
+  cartItems: CartItem[];
+  cartItemsSub: Subscription;
 
-  checkoutCartItems: CheckoutCartItem[] = [];
-  products: Product[];
-
-  productSubscription: Subscription;
-
-  constructor(private shoppingCartService: ShoppingCartService,
-              private productService: ProductService) { }
+  constructor(private shoppingCartService: ShoppingCartService) { }
   
-
   ngOnInit(): void {
-    this.initCheckout();
+    this.cartItemsSub = this.shoppingCartService.cartItemsEmiter.subscribe(items => this.cartItems = items);
+    this.cartItems = this.shoppingCartService.shoppingCart.items;
   }
 
-  initCheckoutCartItems(){
-    this.shoppingCartService.shoppingCart.items.forEach(cartItem => {
-      let product = this.products.find(p => p.key === cartItem.productId);
-      this.addCheckoutItem(product, cartItem);
-    });
+  ngOnDestroy(): void {
+    this.cartItemsSub.unsubscribe();
   }
 
-  initCheckout(){
-    this.productService.getAll()
-                       .subscribe(products => {
-                        this.products = products;
-                        this.initCheckoutCartItems();
-                       });
+  increaseQty(event: MouseEvent): void{
+    this.changeCartItemQty(event, 1);
   }
 
-  private addCheckoutItem(product: Product, cartItem: CartItem){
-    let checkoutItem = this.createCheckoutCartItem(product, cartItem);
-    this.checkoutCartItems.push(checkoutItem);
+  decreaseQty(event: MouseEvent): void{
+    this.changeCartItemQty(event, -1);
   }
 
-  private createCheckoutCartItem(product: Product, cartItem: CartItem): CheckoutCartItem{
-    let checkoutCartItem: CheckoutCartItem = { 
-      name: product.title,
-      imgUrl: product.imageUrl,
-      price: product.price,
-      quantity: cartItem.quantity,
-      total: this.calculateCartItemTotal(product, cartItem.quantity)
-    }
-
-    return checkoutCartItem;
+  private changeCartItemQty(event: MouseEvent, quantity: number){
+    let productId: string = (event.target as Element).id;
+    this.shoppingCartService.updateCartItemQuantity(productId, quantity);
   }
-
-  private calculateCartItemTotal(product: Product, qty: number) : number{
-    return product.price * qty;
-  }
-
 }

@@ -23,9 +23,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let cartItem of checkoutCartItems; let i = index" class="cart-item-row">
+            <tr *ngFor="let cartItem of cartItems; let i = index" class="cart-item-row">
                 <td>
-                    Options cart item {{ i }}
+                    <div class="btn-container">
+                        <div class="increase-qty-btn" id="{{cartItem.productId}}" (click)="increaseQty($event)"></div>
+                        <div class="decrease-qty-btn" id="{{cartItem.productId}}" (click)="decreaseQty($event)"></div>
+                    </div>
                 </td>
                 <td>
                     <img src="{{cartItem.imgUrl}}">

@@ -31,6 +31,28 @@ table tr td {
     display: flex;
 }
 
+.btn-container{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.btn-container div::after{
+    display: block;
+    content: ' ';
+    background-size: 28px 28px;
+    height: 28px;
+    width: 28px;
+    cursor: pointer;
+}
+
+.decrease-qty-btn::after{
+  background-image: url('../icons/minus.svg');
+}
+
+.increase-qty-btn::after{
+    background-image: url('../icons/plus.svg');
+}
+
 img{
     width: 100%;
     height: auto;
