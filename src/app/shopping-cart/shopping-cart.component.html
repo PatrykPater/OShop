@@ -26,24 +26,29 @@
             <tr *ngFor="let cartItem of cartItems; let i = index" class="cart-item-row">
                 <td>
                     <div class="btn-container">
-                        <div class="increase-qty-btn" id="{{cartItem.productId}}" (click)="increaseQty($event)"></div>
-                        <div class="decrease-qty-btn" id="{{cartItem.productId}}" (click)="decreaseQty($event)"></div>
+                        <div class="increase-qty-btn" id="{{cartItem?.productId}}" (click)="increaseQty($event)"></div>
+                        <div class="decrease-qty-btn" id="{{cartItem?.productId}}" (click)="decreaseQty($event)"></div>
                     </div>
                 </td>
                 <td>
-                    <img src="{{cartItem.imgUrl}}">
+                    <img src="{{cartItem?.imgUrl}}">
                 </td>
                 <td>
-                    {{ cartItem.name }}
+                    {{ cartItem?.name }}
                 </td>
                 <td>
-                    {{ cartItem.price | currency: 'USD' }}
+                    {{ cartItem?.price | currency: 'USD' }}
                 </td>
                 <td>
-                    {{ cartItem.quantity }}
+                    {{ cartItem?.quantity }}
                 </td>
                 <td>
-                    {{ cartItem.total | currency: 'USD' }}
+                    {{ cartItem?.total | currency: 'USD' }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ cartTotal | currency: 'USD' }}
                 </td>
             </tr>
         </tbody>

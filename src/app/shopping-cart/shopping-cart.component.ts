@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ShoppingCartService } from '../services/shopping-cart.service';
 import { CartItem } from '../models/cart-item';
-import { Product } from '../models/product';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -11,6 +10,9 @@ import { Subscription } from 'rxjs';
 })
 export class ShoppingCartComponent implements OnInit, OnDestroy {
   cartItems: CartItem[];
+  cartTotal: number;
+
+  cartTotalSub: Subscription;
   cartItemsSub: Subscription;
 
   constructor(private shoppingCartService: ShoppingCartService) { }
@@ -18,21 +20,28 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.cartItemsSub = this.shoppingCartService.cartItemsEmiter.subscribe(items => this.cartItems = items);
     this.cartItems = this.shoppingCartService.shoppingCart.items;
+    
+    this.cartTotalSub = this.shoppingCartService.cartTotalEmiter.subscribe(total => this.cartTotal = total);
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy(): void 
+  {
     this.cartItemsSub.unsubscribe();
+    this.cartTotalSub.unsubscribe()
   }
 
-  increaseQty(event: MouseEvent): void{
+  increaseQty(event: MouseEvent): void
+  {
     this.changeCartItemQty(event, 1);
   }
 
-  decreaseQty(event: MouseEvent): void{
+  decreaseQty(event: MouseEvent): void
+  {
     this.changeCartItemQty(event, -1);
   }
 
-  private changeCartItemQty(event: MouseEvent, quantity: number){
+  private changeCartItemQty(event: MouseEvent, quantity: number) : void
+  {
     let productId: string = (event.target as Element).id;
     this.shoppingCartService.updateCartItemQuantity(productId, quantity);
   }
