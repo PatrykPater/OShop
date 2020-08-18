@@ -13,7 +13,7 @@ export class FlashMessageService {
   constructor() { }
 
   createFlashMessage(msgText: string, msgType: FlashMessageType) : FlashMessage{
-    return { text: msgText, type: msgType} as FlashMessage;
+    return new FlashMessage(msgText, msgType);
   }
   
 }

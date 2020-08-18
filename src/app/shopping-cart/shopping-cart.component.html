@@ -46,11 +46,11 @@
                     {{ cartItem?.total | currency: 'USD' }}
                 </td>
             </tr>
-            <tr>
-                <td>
-                    {{ cartTotal | currency: 'USD' }}
-                </td>
-            </tr>
         </tbody>
     </table>
+    <div class="cart-summary-container">
+        <div class="cart-summary">
+            {{ cartTotal | currency: 'USD' }}
+        </div>
+    </div>
 </div>

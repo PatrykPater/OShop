@@ -5,14 +5,18 @@ import { ShoppingCart } from '../models/shopping-cart';
 import { CartItem } from '../models/cart-item';
 import { FlashMessageService } from './flash-message.service';
 import { FlashMessageType } from '../enums/flash-message-types';
-import { Subject } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs';
+import { map, flatMap, switchMap } from 'rxjs/operators';
 import { ProductService } from './product.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingCartService {
-  private _shoppingCart: ShoppingCart;
+
+  private endpoins = {  Carts: '/shopping-carts/' }
+
+  public shoppingCart: ShoppingCart;
 
   cartItemsCounter: number = 0;
   cartTotal: number = 0;
@@ -25,16 +29,15 @@ export class ShoppingCartService {
               private flashMessageService: FlashMessageService,
               private productService: ProductService) { this.getOrCreateCart(); }
 
-   shoppingCart() : ShoppingCart{
-     return this._shoppingCart ?? { key: "", dateCreated: 0, items: [] }
+   getShoppingCart() : ShoppingCart{
+     return this.shoppingCart ?? new ShoppingCart(0);
    }           
 
    addToCart (product: Product, quantity: number): void 
   {
-    let cartItem = this._shoppingCart.items.find(cartItem => cartItem.productId === product.key);
+    let cartItem = this.shoppingCart.items.find(cartItem => cartItem.productId === product.key);
     if(!cartItem){ this.addNewCartItem(product); return; } 
     this.updateCartItemQuantity(product.key, quantity);
-
   }
 
   updateCartItemQuantity(productId: string, quantity: number): void 
@@ -43,7 +46,7 @@ export class ShoppingCartService {
     let flashMessage = this.flashMessageService.createFlashMessage("Success! Cart item quantity changed.", FlashMessageType.success);
     this.updateCartItemsCounter();
     this.flashMessageService.flashMessageEmiter.next(flashMessage);
-    this.cartItemsEmiter.next(this._shoppingCart.items);
+    this.cartItemsEmiter.next(this.shoppingCart.items);
     this.calculateCartTotal();
    }
 
@@ -51,7 +54,7 @@ export class ShoppingCartService {
   {
     this.cartItemsCounter = 0;
 
-    this._shoppingCart.items.forEach(cartItem => {
+    this.shoppingCart.items.forEach(cartItem => {
       this.cartItemsCounter += cartItem.quantity
     });
 
@@ -63,31 +66,31 @@ export class ShoppingCartService {
     this.insertNewCartItem(product);
     let flashMessage = this.flashMessageService.createFlashMessage("Success! Product added to cart.", FlashMessageType.success);
     this.flashMessageService.flashMessageEmiter.next(flashMessage);
-    this.cartItemsEmiter.next(this._shoppingCart.items);
+    this.cartItemsEmiter.next(this.shoppingCart.items);
     this.calculateCartTotal();
    }
 
   private insertNewCartItem(product: Product): void 
   {
     let cartItem = this.createNewCartObject(product);
-    this._shoppingCart.items.push(cartItem);
-    this.db.object('/shopping-carts/' + this._shoppingCart.key).update(this._shoppingCart);
+    this.shoppingCart.items.push(cartItem);
+    this.db.object(this.endpoins.Carts + this.shoppingCart.key).update(this.shoppingCart);
   }
 
   private updateCartItemQty(productId: string, quantity: number): void 
   {
-    let cartItem = this._shoppingCart.items.find(ci => ci.productId == productId);
+    let cartItem = this.shoppingCart.items.find(ci => ci.productId == productId);
     cartItem.quantity = cartItem.quantity + quantity;
     
     if(cartItem.quantity <= 0) this.removeCartItemFromCart(cartItem);
 
-    this.db.object('/shopping-carts/' + this._shoppingCart.key).update(this._shoppingCart);
+    this.db.object(this.endpoins.Carts + this.shoppingCart.key).update(this.shoppingCart);
   }
 
   private removeCartItemFromCart(cartItem: CartItem) : void 
   {
-    let index = this._shoppingCart.items.findIndex(item => item == cartItem);
-    this._shoppingCart.items.splice(index, 1);
+    let index = this.shoppingCart.items.findIndex(item => item == cartItem);
+    this.shoppingCart.items.splice(index, 1);
   }
 
   private async getOrCreateCart() : Promise<void> 
@@ -104,56 +107,58 @@ export class ShoppingCartService {
     return result.key;
   }
 
-  private getCart(cartID : string) : void 
-  {
-    this.db.object('/shopping-carts/' + cartID)
-            .snapshotChanges()
-            .subscribe(cart => {
-              let { key, payload } = cart;
-              this._shoppingCart = payload.val() as ShoppingCart
-              this._shoppingCart.key = key;
 
-              if(!this._shoppingCart.items) this._shoppingCart.items = [];
-
-              this._shoppingCart.items.forEach(item => this.fillProductDetails(item));
-              this.updateCartItemsCounter();
-              this.calculateCartTotal();
-              this.cartItemsEmiter.next(this._shoppingCart.items);
-            });
+  private getCart(cartID: string): void{
+    this.productService.getAll()
+                        .pipe(
+                          switchMap(products => this.getCartObservable(cartID, products)))
+                          .subscribe(cart =>{
+                            this.shoppingCart = cart;
+                                      this.updateCartItemsCounter();
+                                      this.calculateCartTotal();
+                                      this.cartItemsEmiter.next(this.shoppingCart.items);
+                          })
   }
 
   private createNewUserShoppingCart(): firebase.database.Reference
   {
-    let shoppingCart: ShoppingCart = 
-    {  
-      dateCreated: new Date().getTime(),
-      items: [] 
-    };
-    return this.db.list('/shopping-carts').push(shoppingCart);
+    let shoppingCart = new ShoppingCart(new Date().getTime());
+    return this.db.list(this.endpoins.Carts).push(shoppingCart);
   }
 
   private createNewCartObject(product: Product) : CartItem
   {
-    let cartItem : CartItem = 
-    {
-      productId: product.key,
-      quantity: 1,
-      cartId: this._shoppingCart.key
-    };
-
+    let cartItem = new CartItem(this.shoppingCart.key, product.key, 1);
     return cartItem;
   }
 
-  private fillProductDetails(cartItem: CartItem) : void
+  private fillProductDetails(cartItems: CartItem[], products: Product[]) : void
   {
-    this.productService.get(cartItem.productId).subscribe(product =>{
-      cartItem.name = product.title;
-      cartItem.price = product.price;
-      cartItem.imgUrl = product.imageUrl;
-      cartItem.total = this.calculateCartItemTotal(product, cartItem.quantity);
+      cartItems.forEach(cartItem => {
+        let product = products.find(p => p.key == cartItem.productId);
+
+        cartItem.name = product.title;
+        cartItem.price = product.price;
+        cartItem.imgUrl = product.imageUrl;
+        cartItem.total = this.calculateCartItemTotal(product, cartItem.quantity);
     });
   }
 
+  private getCartObservable(cartID : string, products: Product[]) : Observable<ShoppingCart>{
+    return this.db.object(this.endpoins.Carts + cartID)
+              .snapshotChanges()
+              .pipe(
+                map(cart => {
+                  let { key, payload } = cart;
+                  let shoppingCart = payload.val() as ShoppingCart;
+                  shoppingCart.key = key;
+
+                   if(!shoppingCart.items) shoppingCart.items = [];
+                
+                this.fillProductDetails(shoppingCart.items, products);  
+                return shoppingCart;
+              }))
+  }
 
   private calculateCartItemTotal(product: Product, qty: number) : number
   {
@@ -162,7 +167,7 @@ export class ShoppingCartService {
 
   private calculateCartTotal()
   {
-    this.cartTotal = this._shoppingCart.items.reduce((total, item) => {
+    this.cartTotal = this.shoppingCart.items.reduce((total, item) => {
       return total += item.total;
     }, 0);
     this.cartTotalEmiter.next(this.cartTotal);

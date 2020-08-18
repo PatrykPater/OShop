@@ -1,15 +1,16 @@
 .shopping-cart-container{
-    display: flex;
-    justify-content: center;
-    
     text-align: center;
+    width: 100%;
+
+    /* display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 900px 150px ; */
 }
+
 .cart-header{
  background-color:rgba(0,0,0,.1);
  border: solid 1px;
  border-right: solid 1px;
-
- 
 }
 
 .cart-item-row{
@@ -21,14 +22,24 @@
 }
 
 .shopping-cart-container
-table tr td {
+table {
+    margin: 0 auto;
+}
+
+.shopping-cart-container
+table 
+tr 
+td {
     border: solid 1px;
     height: 150px;
     width: 150px;
 }
 
 .cart-summary-container{
-    display: flex;
+    border: solid 1px;
+    border-top: none;
+    height: 150px;
+    width: 150px;
 }
 
 .btn-container{

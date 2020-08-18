@@ -1,6 +1,12 @@
 import { FlashMessageType } from '../enums/flash-message-types';
 
-export interface FlashMessage {
-    text: string,
-    type: FlashMessageType
+export class FlashMessage {
+    constructor(text: string, type: FlashMessageType)
+    {
+        this.text = text;
+        this.type = type;
+    }
+    
+    text: string;
+    type: FlashMessageType;
 }
