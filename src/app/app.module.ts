@@ -16,6 +16,7 @@ import { AdminOrdersComponent } from './admin/admin-orders/admin-orders.componen
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
@@ -61,9 +62,10 @@ import { FlashMessageTypeDirective } from './directives/flash-message-type-style
     BrowserModule,
     FormsModule,
     NgbModule,
+    HttpClientModule,
     DataTablesModule,
     RouterModule.forRoot([
-      {path: '', component: ProductsComponent},
+      {path: '', component: HomeComponent},
       {path: 'products', component: ProductsComponent},
       {path: 'shopping-cart', component: ShoppingCartComponent},
       {path: 'register', component: NewUserComponent},

@@ -1,10 +1,6 @@
 .shopping-cart-container{
     text-align: center;
     width: 100%;
-
-    /* display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: 900px 150px ; */
 }
 
 .cart-header{
@@ -35,11 +31,12 @@ td {
     width: 150px;
 }
 
-.cart-summary-container{
-    border: solid 1px;
-    border-top: none;
-    height: 150px;
-    width: 150px;
+.shopping-cart-container >
+table >
+tbody >
+.cart-summary-container >
+td:first-child{
+    border: none;
 }
 
 .btn-container{

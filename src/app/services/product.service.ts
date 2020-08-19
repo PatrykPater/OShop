@@ -4,12 +4,14 @@ import { Product } from '../models/product';
 import { map, filter, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ThrowStmt } from '@angular/compiler';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private db: AngularFireDatabase,
+              private httpClient: HttpClient) { }
 
   create(product: Product){
     return this.db.list('/products').push(product);
