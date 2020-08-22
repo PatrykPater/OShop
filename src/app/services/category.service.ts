@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
 import { AngularFireObject, AngularFireList, AngularFireDatabase } from '@angular/fire/database';
 import { Category } from '../models/category';
-import { map, filter, switchMap } from 'rxjs/operators';
+import { map, filter, switchMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryService {
+  private Url = { productEndPoint: 'https://localhost:44322/categories' }
+  constructor(private httpClient: HttpClient) { }
 
-  constructor(private db: AngularFireDatabase) { }
-
-  getAll(): Observable<Category[]>{
-    return this.db.list('/categories', ref => ref.orderByChild('title'))
-    .snapshotChanges()
-    .pipe(
-        map(changes => 
-            changes.map(c => ({ key: c.payload.key, ... c.payload.val() as Category})))
-    )
+  getAll(): Observable<Category[]> {
+    return this.httpClient.get<Category[]>(this.Url.productEndPoint)
+      .pipe(
+        tap(_ => console.log('Categories Fetched'))
+      );
   }
+
 }

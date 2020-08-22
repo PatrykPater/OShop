@@ -12,7 +12,6 @@ import { ShoppingCart } from '../models/shopping-cart';
 export class ShoppingCartComponent implements OnInit, OnDestroy {
   cartItems: CartItem[];
   cartTotal: number;
-  shoppingCart: ShoppingCart;
 
   cartTotalSub: Subscription;
   cartItemsSub: Subscription;
@@ -20,11 +19,10 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   constructor(private shoppingCartService: ShoppingCartService) { }
   
   ngOnInit(): void {
-    this.cartItems = this.shoppingCartService.getShoppingCart().items;
-    this.cartTotal = this.shoppingCartService.cartTotal
-
     this.cartItemsSub = this.shoppingCartService.cartItemsEmiter.subscribe(items => this.cartItems = items);
     this.cartTotalSub = this.shoppingCartService.cartTotalEmiter.subscribe(total => this.cartTotal = total);
+
+    this.shoppingCartService.EmmitShoppingCartData();
   }
 
   ngOnDestroy(): void 
@@ -45,7 +43,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
   private changeCartItemQty(event: MouseEvent, quantity: number) : void
   {
-    let productId: string = (event.target as Element).id;
+    let productId: number = Number((event.target as Element).id);
     this.shoppingCartService.updateCartItemQuantity(productId, quantity);
   }
 }

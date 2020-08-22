@@ -12,7 +12,7 @@ import { Category } from 'src/app/models/category';
   styleUrls: ['./product-form.component.css']
 })
 export class ProductFormComponent implements OnInit, OnDestroy {
-productId: string;
+productId: number;
 product: Product = this.createProductObject();
 categories: Category[];
 
@@ -43,21 +43,21 @@ productSubscription: Subscription;
    };
 
    initProductEdit(){
-    this.productId = this.route.snapshot.paramMap.get('id');
+    this.productId = Number(this.route.snapshot.paramMap.get('id'));
     if (this.productId) {
         this.productSubscription = this.productService.get(this.productId)
                                                       .subscribe(change => this.product = change);
     };
    };
 
-   save(product: any){
+   save(product: Product){
     if (this.productId) this.productService.update(this.productId, product)
     else this.productService.create(product);
     this.navigateToProductList();
    }
 
    createProductObject() : Product{
-     return {title: "", category : "", imageUrl: "", price: 0, key: undefined}
+     return {name: "", categoryName : "", imageUrl: "", price: 0, id: undefined, categoryId: 0}
    }
 
    delete(){

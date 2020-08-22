@@ -31,7 +31,7 @@
                     </div>
                 </td>
                 <td>
-                    <img src="{{cartItem?.imgUrl}}">
+                    <img src="{{cartItem?.imageUrl}}">
                 </td>
                 <td>
                     {{ cartItem?.name }}
@@ -43,7 +43,7 @@
                     {{ cartItem?.quantity }}
                 </td>
                 <td>
-                    {{ cartItem?.total | currency: 'USD' }}
+                    {{ cartItem?.itemTotal | currency: 'USD' }}
                 </td>
             </tr>
             <tr class="cart-summary-container">

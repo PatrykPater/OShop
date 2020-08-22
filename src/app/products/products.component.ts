@@ -43,7 +43,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.selectedCategory = params.get('category');
 
       this.filteredProducts = (this.selectedCategory) ?
-      this.products.filter(p => p.category === this.selectedCategory) :
+      this.products.filter(p => p.categoryName === this.selectedCategory) :
       this.products;
     })
   }

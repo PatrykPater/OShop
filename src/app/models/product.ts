@@ -1,7 +1,9 @@
-export interface Product{
-    key: string,
-    category: string,
-    imageUrl: string,
-    price: number,
-    title: string
+export class Product{
+    id: number;
+    name: string;
+    imageUrl: string;
+    price: number;
+    
+    categoryId: number;
+    categoryName: string;
 }

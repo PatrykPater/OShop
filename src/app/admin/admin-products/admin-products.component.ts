@@ -40,7 +40,7 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
 
   filter(query: string): void{
     this.filteredProducts = (query) ?
-    this.products.filter(p => p.title.toLowerCase().includes(query.toLowerCase())) :
+    this.products.filter(p => p.name.toLowerCase().includes(query.toLowerCase())) :
     this.products;
   }
 
@@ -49,9 +49,5 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
       pagingType : 'full_numbers',
       pageLength: 5
     }
-  }
-
-  editProduct(productId: string): void{
-
   }
 }

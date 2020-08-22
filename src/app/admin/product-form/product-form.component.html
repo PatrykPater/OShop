@@ -3,15 +3,26 @@
         <div class="col-md-6">
             <form #f="ngForm" (ngSubmit)="save(f.value)">
                 <div class="form-group">
-                    <label for="title">Title</label>
-                    <input #title="ngModel" [(ngModel)]="product.title" name="title" id="title" type="text" class="form-control" required>
-                    <div class="alert alert-danger" *ngIf="title.touched && title.invalid">Title is required</div>
+                    <label for="name">Name</label>
+                    <input #name="ngModel" 
+                           [(ngModel)]="product.name" 
+                           name="name" id="name" 
+                           type="text" 
+                           class="form-control" 
+                           required>
+                    <div class="alert alert-danger" *ngIf="name.touched && name.invalid">Name is required</div>
                 </div>
                 <div class="form-group">
                     <label for="price">Price</label>
                     <div class="input-group">
                         <span class="input-group-text">$</span>
-                        <input #price="ngModel" [(ngModel)]="product.price" name="price" id="price" type="number" class="form-control" required min="1">
+                        <input #price="ngModel" 
+                               [(ngModel)]="product.price" 
+                               name="price" 
+                               id="price" 
+                               type="number" 
+                               class="form-control" 
+                               required min="1">
                     </div>
                     <div class="alert alert-danger" *ngIf="price.touched && price.invalid">
                         <div *ngIf="price.errors.required">Price is required</div>
@@ -19,21 +30,32 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="category">Category</label>
-                    <select #category="ngModel" [(ngModel)]="product.category" name="category" id="category" class="form-control" required>
-                        <option value=""></option>
-                        <option *ngFor="let c of categories" [value]="c.key">
+                    <label for="categoryId">Category</label>
+                    <select #categoryId="ngModel" 
+                            [(ngModel)]="product.categoryId" 
+                            name="categoryId" id="categoryId" 
+                            class="form-control" 
+                            required>
+                        <option [ngValue]="0"></option>
+                        <option *ngFor="let c of categories" [ngValue]="c.id">
                             {{c.name}}
                         </option>
                     </select>
-                    <div class="alert alert-danger" *ngIf="category.touched && category.invalid">Category is required</div>
+                    <div class="alert alert-danger" *ngIf="categoryId.touched && categoryId.invalid">Category is required</div>
                 </div>
                 <div class="form-group">
                     <label for="imageUrl">Image Url</label>
-                    <input #imageUrl="ngModel" [(ngModel)]="product.imageUrl" name="imageUrl" id="imageUrl" type="text" class="form-control" required>
+                    <input #imageUrl="ngModel" 
+                           [(ngModel)]="product.imageUrl" 
+                           name="imageUrl" 
+                           id="imageUrl" 
+                           type="text" 
+                           class="form-control" 
+                           required>
                      <!-- {{ TODO -  add proper validation }} -->
                     <div class="alert alert-danger" *ngIf="imageUrl.touched && imageUrl.invalid">Image url is required</div>
                 </div>
+                <input type="hidden" #id="ngModel" name="id" [(ngModel)]="product.id">
                 <button type="submit" class="btn btn-primary">Save</button>
                 <button type="button" (click)="delete()" class="btn btn-danger">Delete</button>
             </form>

@@ -6,17 +6,23 @@ import { CartItem } from '../models/cart-item';
 import { FlashMessageService } from './flash-message.service';
 import { FlashMessageType } from '../enums/flash-message-types';
 import { Subject, Subscription, Observable } from 'rxjs';
-import { map, flatMap, switchMap } from 'rxjs/operators';
-import { ProductService } from './product.service';
+import { map, flatMap, switchMap, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingCartService {
+  private Url = {  ShoppingCart: 'https://localhost:44322/ShoppingCarts' }
+  private localStorageKeys = { shoppingCartID: 'OShop_ShoppingCart_ID' }
 
-  private endpoins = {  Carts: '/shopping-carts/' }
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type':  'application/json'
+    })
+  };
 
-  public shoppingCart: ShoppingCart;
+  private shoppingCart: ShoppingCart;
 
   cartItemsCounter: number = 0;
   cartTotal: number = 0;
@@ -25,36 +31,34 @@ export class ShoppingCartService {
   cartItemsCounterEmiter = new Subject<number>();
   cartItemsEmiter = new Subject<CartItem[]>();
 
-  constructor(private db: AngularFireDatabase,
-              private flashMessageService: FlashMessageService,
-              private productService: ProductService) { this.getOrCreateCart(); }
-
-   getShoppingCart() : ShoppingCart{
-     return this.shoppingCart ?? new ShoppingCart(0);
-   }           
+  constructor(private flashMessageService: FlashMessageService,
+              private httpClient: HttpClient) { this.initShoppingCart(); }        
 
    addToCart (product: Product, quantity: number): void 
-  {
-    let cartItem = this.shoppingCart.items.find(cartItem => cartItem.productId === product.key);
-    if(!cartItem){ this.addNewCartItem(product); return; } 
-    this.updateCartItemQuantity(product.key, quantity);
-  }
+   {
+      let cartItem = this.shoppingCart.cartItems.find(cartItem => cartItem.productId === product.id);
+      if(!cartItem){ this.addNewCartItem(product); return; } 
+      this.updateCartItemQuantity(product.id, quantity);
+   }
 
-  updateCartItemQuantity(productId: string, quantity: number): void 
+  updateCartItemQuantity(productId: number, quantity: number): void 
   {
     this.updateCartItemQty(productId, quantity);
-    let flashMessage = this.flashMessageService.createFlashMessage("Success! Cart item quantity changed.", FlashMessageType.success);
-    this.updateCartItemsCounter();
-    this.flashMessageService.flashMessageEmiter.next(flashMessage);
-    this.cartItemsEmiter.next(this.shoppingCart.items);
+    this.UpdateCartRequest();
+  }
+
+  EmmitShoppingCartData() : void
+  {
+    this.cartItemsEmiter.next(this.shoppingCart.cartItems);
     this.calculateCartTotal();
-   }
+    this.updateCartItemsCounter();
+  }
 
   private updateCartItemsCounter() : void 
   {
     this.cartItemsCounter = 0;
 
-    this.shoppingCart.items.forEach(cartItem => {
+    this.shoppingCart.cartItems.forEach(cartItem => {
       this.cartItemsCounter += cartItem.quantity
     });
 
@@ -63,112 +67,108 @@ export class ShoppingCartService {
 
    private addNewCartItem(product: Product) : void 
    {
-    this.insertNewCartItem(product);
-    let flashMessage = this.flashMessageService.createFlashMessage("Success! Product added to cart.", FlashMessageType.success);
-    this.flashMessageService.flashMessageEmiter.next(flashMessage);
-    this.cartItemsEmiter.next(this.shoppingCart.items);
-    this.calculateCartTotal();
+    this.AddToCart(product);
+    this.UpdateCartRequest();
    }
 
-  private insertNewCartItem(product: Product): void 
+  private AddToCart(product: Product): void 
   {
-    let cartItem = this.createNewCartObject(product);
-    this.shoppingCart.items.push(cartItem);
-    this.db.object(this.endpoins.Carts + this.shoppingCart.key).update(this.shoppingCart);
+    let cartItem = this.createNewCartItemObject(product);
+    this.shoppingCart.cartItems.push(cartItem);
   }
 
-  private updateCartItemQty(productId: string, quantity: number): void 
+  //what to do about this subscription
+  private UpdateCartRequest() : Subscription
   {
-    let cartItem = this.shoppingCart.items.find(ci => ci.productId == productId);
-    cartItem.quantity = cartItem.quantity + quantity;
-    
-    if(cartItem.quantity <= 0) this.removeCartItemFromCart(cartItem);
+    const url = `${this.Url.ShoppingCart}/${this.shoppingCart.id}`
+    return this.httpClient.put<ShoppingCart>(url, this.shoppingCart)
+                  .pipe(
+                    tap(_ => console.log('Product Updated'))
+                  )
+                  .subscribe(cart => {
+                    this.shoppingCart = cart;
+                    this.RunPostUpdateEvents();
+                  });
+  }
 
-    this.db.object(this.endpoins.Carts + this.shoppingCart.key).update(this.shoppingCart);
+  private updateCartItemQty(productId: number, quantity: number): void 
+  {
+    let cartItem = this.shoppingCart.cartItems.find(ci => ci.productId == productId);
+    cartItem.quantity = cartItem.quantity + quantity;
+    if(cartItem.quantity <= 0) this.removeCartItemFromCart(cartItem);
   }
 
   private removeCartItemFromCart(cartItem: CartItem) : void 
   {
-    let index = this.shoppingCart.items.findIndex(item => item == cartItem);
-    this.shoppingCart.items.splice(index, 1);
+    let index = this.shoppingCart.cartItems.findIndex(item => item == cartItem);
+    this.shoppingCart.cartItems.splice(index, 1);
   }
 
-  private async getOrCreateCart() : Promise<void> 
+  private initShoppingCart() : void
   {
-    let cartId = localStorage.getItem('cartId');
-    if(!cartId) cartId = await this.CreateNewShoppingCart();
-    this.getCart(cartId);
+    if(this.shoppingCart) return;
+
+    //TODO refactor/registered users
+    //+ we are created shopping cart, getting created cart from backed
+    //and then we get the cart again - redundant call, also to refactor
+    
+    let cartId = localStorage.getItem(this.localStorageKeys.shoppingCartID);
+    if(!cartId){  this.CreateNewShoppingCart(); return; }
+
+    this.getCart(Number(cartId));
   }
 
-  private async CreateNewShoppingCart(): Promise<string> 
+  private async CreateNewShoppingCart() : Promise<void>
   {
-    let result = this.createNewUserShoppingCart();
-    localStorage.setItem('cartId', result.key);
-    return result.key;
+    let cartResult = await this.createNewShoppingCartRequest();
+    if(!cartResult) new Error("Shopping Cart not returned!");
+
+    localStorage.setItem(this.localStorageKeys.shoppingCartID, cartResult.id.toString());
+    this.shoppingCart = cartResult;
   }
 
-
-  private getCart(cartID: string): void{
-    this.productService.getAll()
-                        .pipe(
-                          switchMap(products => this.getCartObservable(cartID, products)))
-                          .subscribe(cart =>{
-                            this.shoppingCart = cart;
-                                      this.updateCartItemsCounter();
-                                      this.calculateCartTotal();
-                                      this.cartItemsEmiter.next(this.shoppingCart.items);
-                          })
-  }
-
-  private createNewUserShoppingCart(): firebase.database.Reference
-  {
-    let shoppingCart = new ShoppingCart(new Date().getTime());
-    return this.db.list(this.endpoins.Carts).push(shoppingCart);
-  }
-
-  private createNewCartObject(product: Product) : CartItem
-  {
-    let cartItem = new CartItem(this.shoppingCart.key, product.key, 1);
-    return cartItem;
-  }
-
-  private fillProductDetails(cartItems: CartItem[], products: Product[]) : void
-  {
-      cartItems.forEach(cartItem => {
-        let product = products.find(p => p.key == cartItem.productId);
-
-        cartItem.name = product.title;
-        cartItem.price = product.price;
-        cartItem.imgUrl = product.imageUrl;
-        cartItem.total = this.calculateCartItemTotal(product, cartItem.quantity);
+  //what to do about this subscription
+  private getCart(cartID: number) : Subscription{
+    const url = `${this.Url.ShoppingCart}/${cartID}`;
+    return this.httpClient.get<ShoppingCart>(url)
+    .pipe(
+      tap(_ => console.log('Cart Fetched'))
+    ).subscribe(cart => {
+      this.shoppingCart = cart;
+      this.EmmitShoppingCartData();
     });
   }
 
-  private getCartObservable(cartID : string, products: Product[]) : Observable<ShoppingCart>{
-    return this.db.object(this.endpoins.Carts + cartID)
-              .snapshotChanges()
-              .pipe(
-                map(cart => {
-                  let { key, payload } = cart;
-                  let shoppingCart = payload.val() as ShoppingCart;
-                  shoppingCart.key = key;
-
-                   if(!shoppingCart.items) shoppingCart.items = [];
-                
-                this.fillProductDetails(shoppingCart.items, products);  
-                return shoppingCart;
-              }))
+  private createNewShoppingCartRequest() : Promise<ShoppingCart> {
+    let shoppingCart = new ShoppingCart(new Date().getTime());
+    return this.httpClient.post<ShoppingCart>(this.Url.ShoppingCart, shoppingCart, 
+      {
+          headers: new HttpHeaders({'Content-Type':  'application/json'})
+      })
+      .pipe(
+        tap(_ => console.log('Shopping Cart Created'))
+      ).toPromise();
   }
 
-  private calculateCartItemTotal(product: Product, qty: number) : number
+  private RunPostUpdateEvents() : void
   {
-    return product.price * qty;
+    this.EmmitShoppingCartData();
+    let flashMessage = this.flashMessageService.createFlashMessage("Success!", FlashMessageType.success);
+    this.flashMessageService.flashMessageEmiter.next(flashMessage);
   }
 
-  private calculateCartTotal()
+  
+
+  private createNewCartItemObject(product: Product) : CartItem
   {
-    this.cartTotal = this.shoppingCart.items.reduce((total, item) => {
-      return total += item.total;
+    let cartItem = new CartItem(this.shoppingCart.id, product.id, 1);
+    return cartItem;
+  }
+
+  private calculateCartTotal() : void
+  {
+    this.cartTotal = this.shoppingCart.cartItems.reduce((total, item) => {
+      return total += item.itemTotal;
     }, 0);
     this.cartTotalEmiter.next(this.cartTotal);
   }

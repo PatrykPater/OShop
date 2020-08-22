@@ -7,7 +7,7 @@ export class ShoppingCart {
         this.dateCreated = dateCreated;
     }
 
-    key: string;
+    id: number;
     dateCreated: number;
-    items: CartItem[];
+    cartItems: CartItem[];
 }

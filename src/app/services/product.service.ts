@@ -1,42 +1,51 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireObject, AngularFireList } from '@angular/fire/database';
 import { Product } from '../models/product';
-import { map, filter, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { ThrowStmt } from '@angular/compiler';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { map, filter, switchMap, tap, catchError } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  constructor(private db: AngularFireDatabase,
-              private httpClient: HttpClient) { }
+  private Url = { productEndPoint: 'https://localhost:44322/products' }
+  constructor(private httpClient: HttpClient) { }          
 
-  create(product: Product){
-    return this.db.list('/products').push(product);
+  create(product: Product): Observable<Product> {
+    return this.httpClient.post<Product>(this.Url.productEndPoint, product)
+      .pipe(
+        tap(_ => console.log('Product Created'))
+      );
   }
 
-  getAll(): Observable<Product[]>{
-    return this.db.list('/products', ref => ref.orderByChild('title'))
-    .snapshotChanges()
+  get(productId: number) : Observable<Product>{
+    const url = `${this.Url.productEndPoint}/${productId}`;
+    return this.httpClient.get<Product>(url)
     .pipe(
-        map(changes => 
-            changes.map(c => ({ key: c.payload.key, ... c.payload.val() as Product})))
-    )
+      tap(_ => console.log('Product Fetched'))
+    );
   }
 
-  get(productId : string): Observable<Product>{
-    return this.db.object('/products/' + productId)
-    .valueChanges()
-    .pipe(map(product => product as Product));
+  getAll(): Observable<Product[]> {
+    return this.httpClient.get<Product[]>(this.Url.productEndPoint)
+      .pipe(
+        tap(_ => console.log('Products Fetched'))
+      );
   }
 
-  update(productId : string, product: Product){
-    return this.db.object('/products/' + productId).update(product);
+  update(productId : number, product: Product) : Subscription {
+    const url = `${this.Url.productEndPoint}/${productId}`;
+    return this.httpClient.put<Product>(url, product)
+      .pipe(
+        tap(_ => console.log('Product Updated'))
+      ).subscribe(p => p);
   }
 
-  delete(productId: string){
-    return this.db.object('/products/' + productId).remove();
+  delete(id: number): Observable<{}> {
+    const url = `${this.Url.productEndPoint}/${id}`;
+    return this.httpClient.delete(url)
+      .pipe(
+        tap(_ => console.log('Product Deleted'))
+      );
   }
 }
