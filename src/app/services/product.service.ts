@@ -11,11 +11,12 @@ export class ProductService {
   private Url = { productEndPoint: 'https://localhost:44322/products' }
   constructor(private httpClient: HttpClient) { }          
 
-  create(product: Product): Observable<Product> {
+  create(product: Product): Subscription {
     return this.httpClient.post<Product>(this.Url.productEndPoint, product)
       .pipe(
         tap(_ => console.log('Product Created'))
-      );
+      )
+      .subscribe(p => p);
   }
 
   get(productId: number) : Observable<Product>{
@@ -41,11 +42,12 @@ export class ProductService {
       ).subscribe(p => p);
   }
 
-  delete(id: number): Observable<{}> {
+  delete(id: number) : Subscription {
     const url = `${this.Url.productEndPoint}/${id}`;
     return this.httpClient.delete(url)
       .pipe(
         tap(_ => console.log('Product Deleted'))
-      );
+      )
+      .subscribe(p => p);
   }
 }

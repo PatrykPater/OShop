@@ -77,7 +77,6 @@ export class ShoppingCartService {
     this.shoppingCart.cartItems.push(cartItem);
   }
 
-  //what to do about this subscription
   private UpdateCartRequest() : Subscription
   {
     const url = `${this.Url.ShoppingCart}/${this.shoppingCart.id}`
@@ -109,9 +108,6 @@ export class ShoppingCartService {
     if(this.shoppingCart) return;
 
     //TODO refactor/registered users
-    //+ we are created shopping cart, getting created cart from backed
-    //and then we get the cart again - redundant call, also to refactor
-    
     let cartId = localStorage.getItem(this.localStorageKeys.shoppingCartID);
     if(!cartId){  this.CreateNewShoppingCart(); return; }
 
@@ -127,7 +123,6 @@ export class ShoppingCartService {
     this.shoppingCart = cartResult;
   }
 
-  //what to do about this subscription
   private getCart(cartID: number) : Subscription{
     const url = `${this.Url.ShoppingCart}/${cartID}`;
     return this.httpClient.get<ShoppingCart>(url)
@@ -156,8 +151,6 @@ export class ShoppingCartService {
     let flashMessage = this.flashMessageService.createFlashMessage("Success!", FlashMessageType.success);
     this.flashMessageService.flashMessageEmiter.next(flashMessage);
   }
-
-  
 
   private createNewCartItemObject(product: Product) : CartItem
   {
