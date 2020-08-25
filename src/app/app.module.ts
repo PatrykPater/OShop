@@ -22,7 +22,6 @@ import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { environment } from "src/environments/environment";
 import { AngularFireAuthModule } from "@angular/fire/auth";
-import { NewUserComponent } from './new-user/new-user/new-user.component';
 import { AuthService } from './services/auth.service';
 import { AuthGuardService } from './services/auth-guard.service';
 import { UserService } from './services/user.service';
@@ -38,6 +37,8 @@ import { FlashMessageComponent } from './flash-message/flash-message.component';
 import { FlashMessageService } from './services/flash-message.service';
 import { FlashMessageTypeDirective } from './directives/flash-message-type-style.drective';
 
+import { AccountModule }  from './account/account.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +52,6 @@ import { FlashMessageTypeDirective } from './directives/flash-message-type-style
     AdminProductsComponent,
     AdminOrdersComponent,
     LoginComponent,
-    NewUserComponent,
     ProductFormComponent,
     ProductFilterComponent,
     ProductCardComponent,
@@ -64,11 +64,12 @@ import { FlashMessageTypeDirective } from './directives/flash-message-type-style
     NgbModule,
     HttpClientModule,
     DataTablesModule,
+    AccountModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent},
       {path: 'products', component: ProductsComponent},
       {path: 'shopping-cart', component: ShoppingCartComponent},
-      {path: 'register', component: NewUserComponent},
+      // {path: 'register', component: NewUserComponent},
       {path: 'login', component: LoginComponent},
 
       {path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuardService] },
