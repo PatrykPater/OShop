@@ -13,7 +13,6 @@ import { OrderSuccessComponent } from './order-success/order-success.component';
 import { MyOrdersComponent } from './my-orders/my-orders.component';
 import { AdminProductsComponent } from './admin/admin-products/admin-products.component';
 import { AdminOrdersComponent } from './admin/admin-orders/admin-orders.component';
-import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
@@ -36,8 +35,8 @@ import { ShoppingCartService } from './services/shopping-cart.service';
 import { FlashMessageComponent } from './flash-message/flash-message.component';
 import { FlashMessageService } from './services/flash-message.service';
 import { FlashMessageTypeDirective } from './directives/flash-message-type-style.drective';
-
-import { AccountModule }  from './account/account.module';
+import { AppRoutingModule } from './app-routing/app-routing.module';
+import { RegisterComponent } from './account/register/register.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +55,8 @@ import { AccountModule }  from './account/account.module';
     ProductFilterComponent,
     ProductCardComponent,
     FlashMessageComponent,
-    FlashMessageTypeDirective
+    FlashMessageTypeDirective,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -64,38 +64,7 @@ import { AccountModule }  from './account/account.module';
     NgbModule,
     HttpClientModule,
     DataTablesModule,
-    AccountModule,
-    RouterModule.forRoot([
-      {path: '', component: HomeComponent},
-      {path: 'products', component: ProductsComponent},
-      {path: 'shopping-cart', component: ShoppingCartComponent},
-      // {path: 'register', component: NewUserComponent},
-      {path: 'login', component: LoginComponent},
-
-      {path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuardService] },
-      {path: 'order-success', component: OrderSuccessComponent, canActivate: [AuthGuardService]},
-      {path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuardService]},
-      {
-        path: 'admin/products/new', 
-        component: ProductFormComponent, 
-        canActivate: [AuthGuardService, AdminAuthGuardService]
-      },
-      {
-        path: 'admin/products/:id', 
-        component: ProductFormComponent, 
-        canActivate: [AuthGuardService, AdminAuthGuardService]
-      },
-      {
-        path: 'admin/products', 
-        component: AdminProductsComponent, 
-        canActivate: [AuthGuardService, AdminAuthGuardService]
-      },
-      {
-        path: 'admin/orders', 
-        component: AdminOrdersComponent, 
-        canActivate: [AuthGuardService, AdminAuthGuardService]
-      }
-    ]),
+    AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireAuthModule
@@ -108,7 +77,8 @@ import { AccountModule }  from './account/account.module';
     CategoryService,
     ProductService,
     ShoppingCartService,
-    FlashMessageService],
+    FlashMessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
