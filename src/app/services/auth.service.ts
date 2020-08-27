@@ -8,6 +8,7 @@ import { switchMap } from 'rxjs/operators';
 import { UserService } from './user.service';
 import { HttpClient } from '@angular/common/http';
 import { UserRegistration } from '../models/user-registration';
+import { UserManager, UserManagerSettings, User } from 'oidc-client';
 
 @Injectable({
   providedIn: 'root'
@@ -15,18 +16,20 @@ import { UserRegistration } from '../models/user-registration';
 export class AuthService {
 user$: Observable<firebase.User>
 
+private manager = new UserManager(getClientSettings());
+private user: User | null;
 
   constructor(private afAuth: AngularFireAuth, 
     private route: ActivatedRoute,
     private userService: UserService,
-    private httpClient: HttpClient) {
+    private httpClient: HttpClient) 
+  {
     this.user$ = afAuth.authState;
-   }
-  
-  login(){
-    let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
-    localStorage.setItem('returnUrl', returnUrl);
-    this.afAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+
+    this.manager.getUser().then(user => { 
+      this.user = user;
+   });
+
   }
 
   logout(){
@@ -43,6 +46,11 @@ user$: Observable<firebase.User>
   };
 
 
+  login() { 
+    debugger;
+    return this.manager.signinRedirect();  
+  }
+
   register(userRegistration: UserRegistration) {    
     this.httpClient.post('https://localhost:44353/Account/Register', userRegistration)
                 .pipe()
@@ -51,4 +59,19 @@ user$: Observable<firebase.User>
                 });
   }
   
+}
+
+export function getClientSettings(): UserManagerSettings {
+  return {
+      authority: 'http://localhost:44353/Login',
+      client_id: 'angular_spa',
+      redirect_uri: 'http://localhost:4200/auth-callback',
+      post_logout_redirect_uri: 'http://localhost:4200/',
+      response_type:"id_token token",
+      scope:"openid profile email api.read",
+      filterProtocolClaims: true,
+      loadUserInfo: true,
+      automaticSilentRenew: true,
+      silent_redirect_uri: 'http://localhost:4200/silent-refresh.html'
+  };
 }
