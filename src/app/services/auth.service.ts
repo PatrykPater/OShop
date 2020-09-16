@@ -9,11 +9,18 @@ import { UserService } from './user.service';
 import { HttpClient } from '@angular/common/http';
 import { UserRegistration } from '../models/user-registration';
 import { UserManager, UserManagerSettings, User } from 'oidc-client';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+// Observable navItem source
+private _authNavStatusSource = new BehaviorSubject<boolean>(false);
+// Observable navItem stream
+authNavStatus$ = this._authNavStatusSource.asObservable();
+
 user$: Observable<firebase.User>
 
 private manager = new UserManager(getClientSettings());
@@ -32,11 +39,14 @@ private user: User | null;
 
   }
 
-  logout(){
-    this.afAuth.signOut();
-  }
+  logout(){ this.afAuth.signOut(); }
 
-  get appUser$() : Observable<AppUser>{
+  login() { return this.manager.signinRedirect(); }
+
+  isAuthenticated(): boolean { return this.user != null && !this.user.expired; }
+
+  get appUser$() : Observable<AppUser>
+  {
     return this.user$.pipe(
        switchMap(user => {
          if(user) return this.userService.get(user.uid).valueChanges();
@@ -46,32 +56,34 @@ private user: User | null;
   };
 
 
-  login() { 
-    debugger;
-    return this.manager.signinRedirect();  
+  register(userRegistration: UserRegistration) 
+  {    
+    this.httpClient.post('https://localhost:44353/Account/Register', userRegistration)
+                    .pipe()
+                    .subscribe(response => { response });
   }
 
-  register(userRegistration: UserRegistration) {    
-    this.httpClient.post('https://localhost:44353/Account/Register', userRegistration)
-                .pipe()
-                .subscribe(response => {
-                  debugger;
-                });
+  async completeAuthentication() 
+  {
+    this.user = await this.manager.signinRedirectCallback();
+    this._authNavStatusSource.next(this.isAuthenticated());      
   }
-  
 }
+
+
+
 
 export function getClientSettings(): UserManagerSettings {
   return {
-      authority: 'http://localhost:44353/Login',
+      authority: 'https://localhost:44353',
       client_id: 'angular_spa',
-      redirect_uri: 'http://localhost:4200/auth-callback',
-      post_logout_redirect_uri: 'http://localhost:4200/',
+      redirect_uri: 'https://localhost:4200/auth-callback',
+      post_logout_redirect_uri: 'https://localhost:4200',
       response_type:"id_token token",
-      scope:"openid profile email api.read",
+      scope:"openid",
       filterProtocolClaims: true,
       loadUserInfo: true,
       automaticSilentRenew: true,
-      silent_redirect_uri: 'http://localhost:4200/silent-refresh.html'
+      silent_redirect_uri: 'https://localhost:4200/silent-refresh.html'
   };
 }
