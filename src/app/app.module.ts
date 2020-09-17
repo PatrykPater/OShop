@@ -17,13 +17,8 @@ import { LoginComponent } from './account/login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AngularFireModule } from "@angular/fire";
-import { AngularFirestoreModule } from "@angular/fire/firestore";
-import { environment } from "src/environments/environment";
-import { AngularFireAuthModule } from "@angular/fire/auth";
 import { AuthService } from './services/auth.service';
 import { AuthGuardService } from './services/auth-guard.service';
-import { UserService } from './services/user.service';
 import { AdminAuthGuardService } from './services/admin-auth-guard.service';
 import { ProductFormComponent } from './admin/product-form/product-form.component';
 import { CategoryService } from './services/category.service';
@@ -37,6 +32,7 @@ import { FlashMessageService } from './services/flash-message.service';
 import { FlashMessageTypeDirective } from './directives/flash-message-type-style.drective';
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { RegisterComponent } from './account/register/register.component';
+import { AuthCallbackComponent } from './account/auth-callback/auth-callback.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +52,8 @@ import { RegisterComponent } from './account/register/register.component';
     ProductCardComponent,
     FlashMessageComponent,
     FlashMessageTypeDirective,
-    RegisterComponent
+    RegisterComponent,
+    AuthCallbackComponent
   ],
   imports: [
     BrowserModule,
@@ -65,14 +62,10 @@ import { RegisterComponent } from './account/register/register.component';
     HttpClientModule,
     DataTablesModule,
     AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule,
-    AngularFireAuthModule
   ],
   providers: [
     AuthService,
     AuthGuardService,
-    UserService, 
     AdminAuthGuardService,
     CategoryService,
     ProductService,

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireObject, AngularFireList, AngularFireDatabase } from '@angular/fire/database';
 import { Category } from '../models/category';
 import { map, filter, switchMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';

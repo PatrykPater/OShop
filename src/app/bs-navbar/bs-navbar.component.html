@@ -20,17 +20,17 @@
             <a class="nav-link" routerLink="/register">Register</a>
           </li>
         </ng-template>
-        <li ngbDropdown *ngIf="appUser; else anonymousUser" class="nav-item dropdown">
+        <li ngbDropdown *ngIf="isAuthenticated; else anonymousUser" class="nav-item dropdown">
           <a ngbDropdownToggle class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ appUser.name }}
+            Welcome
           </a>
           <div ngbDropdownMenu  class="dropdown-menu" aria-labelledby="dropdown01">
             <a ngbDropdownItem class="dropdown-item" routerLink="/my/orders">My orders</a>
-            <ng-container *ngIf="appUser.isAdmin" >
+            <ng-container *ngIf="isAuthenticated" >
               <a ngbDropdownItem class="dropdown-item" routerLink="/admin/orders">Manage Orders</a>
               <a ngbDropdownItem class="dropdown-item" routerLink="/admin/products">Manage Products</a>
             </ng-container>
-            <a ngbDropdownItem class="dropdown-item" (click)="logout()" >Logout</a>
+            <a ngbDropdownItem class="dropdown-item">Logout</a>
           </div>
         </li>
       </ul>

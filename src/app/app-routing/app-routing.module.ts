@@ -13,50 +13,53 @@ import { AdminAuthGuardService } from '../services/admin-auth-guard.service';
 import { AdminProductsComponent } from '../admin/admin-products/admin-products.component';
 import { AdminOrdersComponent } from '../admin/admin-orders/admin-orders.component';
 import { RegisterComponent } from '../account/register/register.component';
+import { AuthCallbackComponent } from '../account/auth-callback/auth-callback.component';
 
-const routesRoot: Routes = 
-[
-  {path: '', component: HomeComponent},
-  {path: 'products', component: ProductsComponent},
-  {path: 'shopping-cart', component: ShoppingCartComponent},
-  {path: 'login', component: LoginComponent},
+// const routesRoot: Routes = 
+// [
+//   {path: '', component: HomeComponent},
+//   {path: 'products', component: ProductsComponent},
+//   {path: 'shopping-cart', component: ShoppingCartComponent},
+//   {path: 'login', component: LoginComponent},
 
-  {path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuardService] },
-  {path: 'order-success', component: OrderSuccessComponent, canActivate: [AuthGuardService]},
-  {path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuardService]},
-  {
-    path: 'admin/products/new', 
-    component: ProductFormComponent, 
-    canActivate: [AuthGuardService, AdminAuthGuardService]
-  },
-  {
-    path: 'admin/products/:id', 
-    component: ProductFormComponent, 
-    canActivate: [AuthGuardService, AdminAuthGuardService]
-  },
-  {
-    path: 'admin/products', 
-    component: AdminProductsComponent, 
-    canActivate: [AuthGuardService, AdminAuthGuardService]
-  },
-  {
-    path: 'admin/orders', 
-    component: AdminOrdersComponent, 
-    canActivate: [AuthGuardService, AdminAuthGuardService]
-  }
-];
+//   {path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuardService] },
+//   {path: 'order-success', component: OrderSuccessComponent, canActivate: [AuthGuardService]},
+//   {path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuardService]},
+//   {
+//     path: 'admin/products/new', 
+//     component: ProductFormComponent, 
+//     canActivate: [AuthGuardService, AdminAuthGuardService]
+//   },
+//   {
+//     path: 'admin/products/:id', 
+//     component: ProductFormComponent, 
+//     canActivate: [AuthGuardService, AdminAuthGuardService]
+//   },
+//   {
+//     path: 'admin/products', 
+//     component: AdminProductsComponent, 
+//     canActivate: [AuthGuardService, AdminAuthGuardService]
+//   },
+//   {
+//     path: 'admin/orders', 
+//     component: AdminOrdersComponent, 
+//     canActivate: [AuthGuardService, AdminAuthGuardService]
+//   }
+// ];
 
 const routesChldren: Routes = [
   {path: '', component: HomeComponent},
   {path: 'products', component: ProductsComponent},
   {path: 'shopping-cart', component: ShoppingCartComponent},
-  {path: 'login', component: LoginComponent},
+  
 
   {path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuardService] },
   {path: 'order-success', component: OrderSuccessComponent, canActivate: [AuthGuardService]},
   {path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuardService]},
 
+  {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
+  {path: 'auth-callback', component: AuthCallbackComponent},
 
   {
     path: 'admin/products/new', 
