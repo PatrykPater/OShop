@@ -1,0 +1,10 @@
+<div class="home-page-featured-wrapper container border">
+    <div class="home-page-featured-title border">
+        {{ featured.Title }}
+    </div>
+    <div class="home-page-featured-items border">
+        <ng-container *ngFor="let featuredItem of featured.Items">
+            <featured-item [featuredItem]="featuredItem"></featured-item>
+        </ng-container>
+    </div>
+</div>

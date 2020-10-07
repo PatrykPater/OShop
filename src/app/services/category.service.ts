@@ -9,14 +9,30 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class CategoryService {
-  private Url = { productEndPoint: 'https://localhost:44322/categories' }
+  private Url = { categoriesEndPoint: 'https://localhost:44322/categories' }
   constructor(private httpClient: HttpClient) { }
 
-  getAll(): Observable<Category[]> {
-    return this.httpClient.get<Category[]>(this.Url.productEndPoint)
+  getAll(): Observable<Category[]> 
+  {
+    return this.httpClient.get<Category[]>(this.Url.categoriesEndPoint)
       .pipe(
         tap(_ => console.log('Categories Fetched'))
       );
   }
+
+  getFeatured() : Category[]
+  {
+    let result = 
+    [
+      new Category("Category1", "1", "imgurl1"), 
+      new Category("Category2", "2", "imgUrl2"), 
+      new Category("Category3", "3", "imgUrl3")
+    ];
+    
+    return result;
+
+  }
+
+
 
 }

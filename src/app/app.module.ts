@@ -33,6 +33,9 @@ import { FlashMessageTypeDirective } from './directives/flash-message-type-style
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { RegisterComponent } from './account/register/register.component';
 import { AuthCallbackComponent } from './account/auth-callback/auth-callback.component';
+import { FeaturedComponent } from './home/featured/featured.component';
+import { FeaturedItemComponent } from './home/featured-item/featured-item.component';
+import { HeroHomepageComponent } from './home/hero/hero-homepage.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,10 @@ import { AuthCallbackComponent } from './account/auth-callback/auth-callback.com
     FlashMessageComponent,
     FlashMessageTypeDirective,
     RegisterComponent,
-    AuthCallbackComponent
+    AuthCallbackComponent,
+    HeroHomepageComponent,
+    FeaturedComponent,
+    FeaturedItemComponent
   ],
   imports: [
     BrowserModule,
