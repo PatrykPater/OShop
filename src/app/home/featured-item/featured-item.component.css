@@ -1,0 +1,13 @@
+.home-page-featured-item{
+    height: 100%;
+    padding: 10px 20px;;
+}
+.home-page-featured-img{
+    height: 90%;
+}
+
+.home-page-featured-img >
+img{
+    height: auto;
+    width: 100%;
+}

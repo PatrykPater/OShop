@@ -14,23 +14,19 @@ export class CategoryService {
 
   getAll(): Observable<Category[]> 
   {
-    return this.httpClient.get<Category[]>(this.Url.categoriesEndPoint)
-      .pipe(
-        tap(_ => console.log('Categories Fetched'))
-      );
+    return this.httpClient.get<Category[]>(this.Url.categoriesEndPoint);
   }
 
   getFeatured() : Category[]
   {
     let result = 
     [
-      new Category("Category1", "1", "imgurl1"), 
-      new Category("Category2", "2", "imgUrl2"), 
-      new Category("Category3", "3", "imgUrl3")
+      new Category("Category1", "1", "assets/images/placeholder-1-e1533569576673-960x960.png"), 
+      new Category("Category2", "2", "assets/images/placeholder-1-e1533569576673-960x960.png"), 
+      new Category("Category3", "3", "assets/images/placeholder-1-e1533569576673-960x960.png")
     ];
     
     return result;
-
   }
 
 

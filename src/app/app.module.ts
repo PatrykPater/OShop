@@ -36,6 +36,9 @@ import { AuthCallbackComponent } from './account/auth-callback/auth-callback.com
 import { FeaturedComponent } from './home/featured/featured.component';
 import { FeaturedItemComponent } from './home/featured-item/featured-item.component';
 import { HeroHomepageComponent } from './home/hero/hero-homepage.component';
+import { CarouselComponent } from './home/carousel/carousel.component';
+import { SlideComponent } from './home/carousel/slide/slide.component';
+import { SlidePositionDirective } from './home/carousel/slide/slide-position.directive';
 
 @NgModule({
   declarations: [
@@ -59,7 +62,10 @@ import { HeroHomepageComponent } from './home/hero/hero-homepage.component';
     AuthCallbackComponent,
     HeroHomepageComponent,
     FeaturedComponent,
-    FeaturedItemComponent
+    FeaturedItemComponent,
+    CarouselComponent,
+    SlideComponent,
+    SlidePositionDirective
   ],
   imports: [
     BrowserModule,

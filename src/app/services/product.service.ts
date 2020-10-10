@@ -13,41 +13,39 @@ export class ProductService {
 
   create(product: Product): Subscription {
     return this.httpClient.post<Product>(this.Url.productEndPoint, product)
-      .pipe(
-        tap(_ => console.log('Product Created'))
-      )
-      .subscribe(p => p);
+                          .subscribe(p => p);
   }
 
   get(productId: number) : Observable<Product>{
     const url = `${this.Url.productEndPoint}/${productId}`;
-    return this.httpClient.get<Product>(url)
-    .pipe(
-      tap(_ => console.log('Product Fetched'))
-    );
+    return this.httpClient.get<Product>(url);
   }
 
   getAll(): Observable<Product[]> {
-    return this.httpClient.get<Product[]>(this.Url.productEndPoint)
-      .pipe(
-        tap(_ => console.log('Products Fetched'))
-      );
+    return this.httpClient.get<Product[]>(this.Url.productEndPoint);
   }
 
   update(productId : number, product: Product) : Subscription {
     const url = `${this.Url.productEndPoint}/${productId}`;
     return this.httpClient.put<Product>(url, product)
-      .pipe(
-        tap(_ => console.log('Product Updated'))
-      ).subscribe(p => p);
+                          .subscribe(p => p);
   }
 
   delete(id: number) : Subscription {
     const url = `${this.Url.productEndPoint}/${id}`;
     return this.httpClient.delete(url)
-      .pipe(
-        tap(_ => console.log('Product Deleted'))
-      )
-      .subscribe(p => p);
+                          .subscribe(p => p);
+  }
+
+  getFeatured() : Product[]
+  {
+    let result = 
+    [
+      new Product("Product1", "assets/images/placeholder-1-e1533569576673-960x960.png", 1), 
+      new Product("Product2", "assets/images/placeholder-1-e1533569576673-960x960.png", 2), 
+      new Product("Product3", "assets/images/placeholder-1-e1533569576673-960x960.png", 3)
+    ];
+    
+    return result;
   }
 }

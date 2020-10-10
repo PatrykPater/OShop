@@ -1,0 +1,19 @@
+
+.home-page-featured-title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-page-featured-wrapper{
+    display: grid;
+    padding-top: 1rem;
+    grid-template-rows: 10% 80%;
+    text-align: center;
+    height: 600px;
+}
+
+.home-page-featured-items{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}

@@ -6,4 +6,11 @@ export class Product{
     
     categoryId: number;
     categoryName: string;
+
+    constructor(name: string, imgUrl: string, id: number)
+    {
+        this.name = name;
+        this.imageUrl = imgUrl;
+        this.id =- id;
+    }
 }

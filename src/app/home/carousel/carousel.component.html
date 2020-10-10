@@ -1,0 +1,20 @@
+<div class="carousel">
+    <div class="carousel_button carousel_button--left" (click)="moveToPrev()">
+        <img src="assets/images/left-arrow.svg">
+    </div>
+    <div class="carousel_track-container">
+        <ul #carousel_track class="carousel_track">
+            <ng-container *ngFor="let image of images; let i = index">
+                <slide [image]="image" [index]="i" [currentIndex]="currentIndex"></slide>
+            </ng-container>
+        </ul>
+    </div>
+    <div class="carousel_button carousel_button--right" (click)="moveToNext()">
+        <img src="assets/images/left-arrow.svg">
+    </div>
+    <div #carousel_nav class="carousel_nav">
+        <button class="carousel_indicator current-slide"></button>
+        <button class="carousel_indicator"></button>
+        <button class="carousel_indicator"></button>
+    </div>
+</div>

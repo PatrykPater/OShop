@@ -80,9 +80,6 @@ export class ShoppingCartService {
   {
     const url = `${this.Url.ShoppingCart}/${this.shoppingCart.id}`
     return this.httpClient.put<ShoppingCart>(url, this.shoppingCart)
-                  .pipe(
-                    tap(_ => console.log('Product Updated'))
-                  )
                   .subscribe(cart => {
                     this.shoppingCart = cart;
                     this.RunPostUpdateEvents();
@@ -125,11 +122,9 @@ export class ShoppingCartService {
   private getCart(cartID: number) : Subscription{
     const url = `${this.Url.ShoppingCart}/${cartID}`;
     return this.httpClient.get<ShoppingCart>(url)
-    .pipe(
-      tap(_ => console.log('Cart Fetched'))
-    ).subscribe(cart => {
-      this.shoppingCart = cart;
-      this.EmmitShoppingCartData();
+      .subscribe(cart => {
+        this.shoppingCart = cart;
+        this.EmmitShoppingCartData();
     });
   }
 
@@ -138,10 +133,7 @@ export class ShoppingCartService {
     return this.httpClient.post<ShoppingCart>(this.Url.ShoppingCart, shoppingCart, 
       {
           headers: new HttpHeaders({'Content-Type':  'application/json'})
-      })
-      .pipe(
-        tap(_ => console.log('Shopping Cart Created'))
-      ).toPromise();
+      }).toPromise();
   }
 
   private RunPostUpdateEvents() : void
